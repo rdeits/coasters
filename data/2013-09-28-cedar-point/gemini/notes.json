@@ -1,5 +1,1 @@
-{
-	"train": "blue",
-	"car": -1,
-	"time": "16:00"
-}
+{"car": -1, "train": "blue", "ride_end": 3341, "ride_start": 950, "time": "16:00"}
