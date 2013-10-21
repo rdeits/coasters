@@ -1,3 +1,5 @@
+from mpl_toolkits.mplot3d.art3d import Line3DCollection
+
 # Topics: line, color, LineCollection, cmap, colorline, codex
 '''
 Defines a function colorline that draws a (multi-)colored 2D line with coordinates x and y.

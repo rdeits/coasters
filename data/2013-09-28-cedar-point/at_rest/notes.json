@@ -1,4 +1,6 @@
 {
 	"time": "13:08",
-	"position": "hand"
+	"position": "hand",
+	"ride_start": 0,
+	"ride_end": -1
 }
