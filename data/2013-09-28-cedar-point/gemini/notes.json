@@ -1,1 +1,1 @@
-{"car": -1, "train": "blue", "ride_end": 3341, "ride_start": 800, "time": "16:00", "position": "left_pocket"}
+{"car": -1, "train": "blue", "ride_end": 3341, "ride_start": 800, "time": "16:00", "position": "left_pocket","known_orientations":{"zhat":[45,55],"z-x":[80,100]},"title":"Gemini (Blue Train)"}

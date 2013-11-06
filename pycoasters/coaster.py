@@ -122,7 +122,7 @@ class Coaster(object):
         img = img.reshape((d,d,3))
         return img
 
-    def portrait_line(self):
+    def portrait_line(self, normalize=False):
         tup = (self.x, self.z, self.y)  # order chosen for aesthetics
         img = a2color(*tup)
         d = len(self.t)
