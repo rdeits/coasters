@@ -66,10 +66,10 @@ def main():
         ax.get_xaxis().set_visible(False)
         ax.get_yaxis().set_visible(False)
         ax.set_ylim([0, np.log(5)])
-        plt.rc('text', usetex=True)
-        plt.rc('font', family='sans-serif')
-        ax.set_title(c.notes['title'],
-                     fontdict={'size':58})
+        # plt.rc('text', usetex=True)
+        # plt.rc('font', family='sans-serif')
+        # ax.set_title(c.notes['title'],
+        #              fontdict={'size':58})
         plt.savefig(os.path.join(ride_folder, 'accel_polar.png'))
 if __name__ == '__main__':
     main()
