@@ -51,7 +51,7 @@ def main():
             continue
 
         # Make polar portrait
-        plt.figure(figsize=(25,25))
+        plt.figure(figsize=(10,10))
         ax = plt.subplot(111,polar=True)
         c.plot_portrait_polar(ax)
         plt.savefig(os.path.join(ride_folder, 'accel_polar.png'))
