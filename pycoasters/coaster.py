@@ -91,6 +91,8 @@ class Coaster(object):
         ax.set_xlabel('Time (s)')
         ax.set_ylabel('Acceleration (g)')
         ax.set_ylim([-1, 5])
+        if 'title' in self.notes:
+            ax.set_title(self.notes['title'])
         return h
 
     def plot_original_xyz(self, ax):
@@ -103,6 +105,8 @@ class Coaster(object):
             ax.axvspan(self.tspan_z[0],self.tspan_z[1],facecolor='b',alpha=0.2)
         if self.tspan_zx is not None:
             ax.axvspan(self.tspan_zx[0],self.tspan_zx[1],facecolor='r',alpha=0.2)
+        if 'title' in self.notes:
+            ax.set_title(self.notes['title'])
 
     def plot_reoriented_xyz(self, ax):
         ax.plot(self.t, self.x, 'r-', self.t, self.y, 'g-', self.t, self.z, 'b-')
@@ -113,33 +117,52 @@ class Coaster(object):
             ax.axvspan(self.tspan_z[0],self.tspan_z[1],facecolor='b',alpha=0.2)
         if self.tspan_zx is not None:
             ax.axvspan(self.tspan_zx[0],self.tspan_zx[1],facecolor='r',alpha=0.2)
+        if 'title' in self.notes:
+            ax.set_title(self.notes['title'])
+
+    def accel_colors(self, scale=1):
+        """
+        Convert acceleration data into pretty colors
+        """
+
+        tup = (self.x * scale, self.z * scale, self.y * scale)  # Using (x,z,y) -> (red,green,blue) map for aesthetics of final result
+        return a2color(*tup)
 
     def portrait_square(self):
-        tup = (self.x, self.z, self.y)  # order chosen for aesthetics
-        img = a2color(*tup)
+        img = self.accel_colors()
         d = np.ceil(np.sqrt(len(self.t)))
         img.resize((d**2,3))
         img = img.reshape((d,d,3))
         return img
 
-    def portrait_line(self, normalize=False):
-        tup = (self.x, self.z, self.y)  # order chosen for aesthetics
-        img = a2color(*tup)
+    def portrait_line(self):
+        img = self.accel_colors()
         d = len(self.t)
         img = img.reshape((1,d,3))
         img = np.resize(img, (500, d, 3))
         return img
 
+    def plot_portrait_polar(self, ax):
+        s = 8  # arbitrary scaling factor
+        mag = np.sqrt(np.power(self.x, 2) + np.power(self.y, 2) + np.power(self.z, 2))
+        img = self.accel_colors(scale=s/mag)
+        ax.set_theta_direction(-1)
+        ax.set_theta_offset(np.pi/2)
+
+        ax.bar(np.linspace(0,2*np.pi,img.shape[0]),
+               np.log(mag+1),
+               width=2*np.pi/(img.shape[0])*0.9,
+               color=img[:,[0,2,1]]/255.0,
+               linewidth=0)
+        ax.get_xaxis().set_visible(False)
+        ax.get_yaxis().set_visible(False)
+        ax.set_ylim([0, np.log(5)])
+
     def plot_xtz_3d(self, ax, cmap=plt.get_cmap('copper')):
         ax.hold(True)
         for (i, ti) in enumerate(self.t):
             c = cmap((ti-self.t[0])/(self.t[-1]-self.t[0]))
-            # ax.plot3D([self.x[i]], [ti], zs=[self.z[i]],
-            #           color=c,
-            #           markeredgecolor=[ci/2 for ci in c],
-            #           linestyle='',
-            #           marker='.',linewidth=0.2)
-            ax.plot3D([0, self.x[i]], [ti, ti], zs=[0, self.z[i]],
+            ax.plot3D([self.x[i]], [ti], zs=[self.z[i]],
                       color=c,
                       markeredgecolor=[ci/2 for ci in c],
                       linestyle='',
@@ -148,3 +171,6 @@ class Coaster(object):
         ax.set_ylabel('y')
         ax.set_zlabel('z')
         ax.view_init(15,330)
+        if 'title' in self.notes:
+            ax.set_title(self.notes['title'])
+
