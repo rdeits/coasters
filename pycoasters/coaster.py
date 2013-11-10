@@ -167,9 +167,9 @@ class Coaster(object):
                       markeredgecolor=[ci/2 for ci in c],
                       linestyle='',
                       marker='.')
-        ax.set_xlabel('x')
-        ax.set_ylabel('y')
-        ax.set_zlabel('z')
+        ax.set_xlabel('x (g)')
+        ax.set_ylabel('time (s)')
+        ax.set_zlabel('z (g)')
         ax.view_init(15,330)
         if 'title' in self.notes:
             ax.set_title(self.notes['title'])
