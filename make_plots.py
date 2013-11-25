@@ -1,3 +1,5 @@
+from __future__ import print_function
+
 import sys
 import os
 import matplotlib.pyplot as plt
@@ -24,13 +26,16 @@ def main():
 
     folders = []
 
-    def visit(arg, dirname, names):
-        if 'accelerometer_log.txt' in names:
-            folders.append(dirname)
-    os.path.walk(base_path, visit, None)
+    # def visit(arg, dirname, names):
+    #     if 'accelerometer_log.txt' in names:
+    #         folders.append(dirname)
+    # os.path.walk(base_path, visit, None)
+    for (dirpath, dirnames, filenames) in os.walk(base_path):
+        if 'accelerometer_log.txt' in filenames:
+            folders.append(dirpath)
 
     for ride_folder in folders:
-        print "Running analysis on {}".format(ride_folder)
+        print("Running analysis on {}".format(ride_folder))
         c = Coaster.load(ride_folder)
 
         # Make 3D plot
@@ -41,6 +46,7 @@ def main():
         fname = os.path.join(ride_folder, 'accel_3d.pdf')
         plt.savefig(fname)
         pdf2png(fname)
+        plt.close(fig)
 
         # Make 2D plots
         f, axs = plt.subplots(3,1,figsize=(8,16))
@@ -50,30 +56,34 @@ def main():
         fname = os.path.join(ride_folder, 'acceleration.pdf')
         plt.savefig(fname)
         pdf2png(fname)
+        plt.close(f)
 
         # Make portraits
         img = c.portrait_square()
         mag = 10
         img = np.dstack([np.kron(img[:,:,j], np.ones((mag,mag))) for j in range(img.shape[2])])
         fname = os.path.join(ride_folder, 'accel_portrait.pdf')
-        show(img, fname)
+        fig = show(img, fname)
         pdf2png(fname)
+        plt.close(fig)
 
         img = c.portrait_line()
         fname = os.path.join(ride_folder, 'accel_portrait_line.pdf')
-        show(img, fname)
+        fig = show(img, fname)
         pdf2png(fname)
+        plt.close(fig)
 
         if 'skip' in c.notes and c.notes['skip']:
             continue
 
         # Make polar portrait
-        plt.figure(figsize=(10,10))
+        fig = plt.figure(figsize=(10,10))
         ax = plt.subplot(111,polar=True)
         c.plot_portrait_polar(ax)
         fname = os.path.join(ride_folder, 'accel_polar.pdf')
         plt.savefig(fname)
         pdf2png(fname)
+        plt.close(fig)
 
 if __name__ == '__main__':
     main()

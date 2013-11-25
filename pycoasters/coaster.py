@@ -34,7 +34,7 @@ class Coaster(object):
         data = pd.read_csv(os.path.join(ride_folder, 'accelerometer_log.txt'), sep=",", header=1)
         notes_fn = os.path.join(ride_folder, 'notes.json')
         try:
-            notes = json.load(open(notes_fn, 'rb'))
+            notes = json.loads(open(notes_fn, 'rb').read().decode('utf-8'))
         except IOError:
             notes = {}
         return Coaster(data, notes)
