@@ -1,0 +1,1 @@
+This data was provided by Dr. Roger Meike from his blog post here: <https://blogs.oracle.com/roger/entry/amusement_parks_and_accelerometers>
