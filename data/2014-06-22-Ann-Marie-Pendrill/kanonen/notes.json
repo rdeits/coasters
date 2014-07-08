@@ -1,1 +1,1 @@
-{"title": "Kanonen", "acceleration_units": "m/s^2", "ride_start":0, "ride_end":-500, "known_orientations": {"zhat":[65,75], "z-x":[10,25]}}
+{"title": "Kanonen", "acceleration_units_per_g": 9.81, "ride_start":0, "ride_end":-500, "known_orientations": {"zhat":[65,75], "z-x":[10,25]}}

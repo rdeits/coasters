@@ -12,6 +12,8 @@ from pycoasters.rotations import axis2rotmat
 
 g = 9.81
 TARGET_SAMPLE_HZ = 30
+DEFAULT_NOTES = {"ride_start": 0, "ride_end": -1, "header_lines": 1, "footer_lines": 0,
+                 "acceleration_units_per_g": 1, "time_units_per_s": 1}
 
 def mean_unit_vector(data, tspan):
     chunk = data[((tspan[0] <= data.time) & (data.time <= tspan[1]))]
@@ -21,6 +23,7 @@ def mean_unit_vector(data, tspan):
     v = np.array([x,y,z])
     v = v / norm(v)
     return v
+
 
 def a2color(x,y,z):
     color = np.zeros((len(x),3),dtype='i8')
@@ -32,29 +35,31 @@ def a2color(x,y,z):
         color[color[:,j] < 0, j] = 0
     return color
 
+
 class Coaster(object):
     @staticmethod
     def load(ride_folder):
         notes_fn = os.path.join(ride_folder, 'notes.json')
         try:
-            notes = json.load(open(notes_fn, 'r'))
+            loaded_notes = json.load(open(notes_fn, 'r'))
         except IOError:
-            notes = {}
-        if "header_lines" in notes:
-            header = notes["header_lines"]
-        else:
-            header = 1
-        if "footer_lines" in notes:
-            footer = notes["footer_lines"]
-        else:
-            footer = 0
+            loaded_notes = {}
+        notes = DEFAULT_NOTES.copy()
+        notes.update(loaded_notes)
+        header = notes["header_lines"]
+        footer = notes["footer_lines"]
 
-        data = pd.read_csv(os.path.join(ride_folder, 'accelerometer_log.txt'), sep=",", header=header, skip_footer=footer)
+        data = pd.read_csv(os.path.join(ride_folder, 'accelerometer_log.txt'),
+                           sep=",", header=header, skip_footer=footer)
         return Coaster(data, notes)
 
     def __init__(self, data, notes):
         self.data = data
         self.notes = notes
+        self.data.time = self.data.time / notes["time_units_per_s"]
+        self.data.x = self.data.x / self.notes["acceleration_units_per_g"]
+        self.data.y = self.data.y / self.notes["acceleration_units_per_g"]
+        self.data.z = self.data.z / self.notes["acceleration_units_per_g"]
 
         tfi = self.data.time.last_valid_index()
         timespan = self.data.time[tfi] - self.data.time[0]
@@ -63,29 +68,13 @@ class Coaster(object):
         if sample_rate > TARGET_SAMPLE_HZ:
             resampled_data = {}
             for k in self.data.keys():
-                if k.strip() == '':
-                    continue
-                if k != "time":
+                if k in ['x', 'y', 'z']:
                     (resampled_data[k], resampled_data['time']) = \
                         resample(self.data[k][:tfi],
                                  t=self.data.time[:tfi],
                                  num=timespan*TARGET_SAMPLE_HZ)
             resampled_data['time'] = resampled_data['time'][:len(resampled_data['x'])]
             self.data = pd.DataFrame.from_dict(resampled_data)
-
-        if "acceleration_units" in self.notes:
-            if self.notes["acceleration_units"] == "m/s^2":
-                self.data.x = self.data.x / 9.81
-                self.data.y = self.data.y / 9.81
-                self.data.z = self.data.z / 9.81
-            elif self.notes["acceleration_units"] == "g":
-                pass
-            else:
-                raise ValueError("Unknown units")
-        elif "acceleration_units_per_g" in self.notes:
-            self.data.x = self.data.x / self.notes["acceleration_units_per_g"]
-            self.data.y = self.data.y / self.notes["acceleration_units_per_g"]
-            self.data.z = self.data.z / self.notes["acceleration_units_per_g"]
 
         self.ndx_range = (notes['ride_start'], notes['ride_end'])
 
